@@ -13,6 +13,21 @@ class Bot(Client):
          workers=50,
          sleep_threshold=10
         )
+        import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class HealthCheckHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"OK")
+
+def run_health_server():
+    server = HTTPServer(('', 8000), HealthCheckHandler)
+    server.serve_forever()
+
+# Start the server in a separate thread
+threading.Thread(target=run_health_server, daemon=True).start()
 
       
     async def start(self):
